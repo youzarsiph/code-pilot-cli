@@ -1,5 +1,6 @@
 """ CodePilot CLI """
 
+import json
 from typing import Dict, List, Literal
 import click
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ from huggingface_hub import InferenceClient
     type=click.STRING,
     show_default=True,
     default="HuggingFaceH4/starchat2-15b-v0.1",
+    help="Customize the LLM.",
 )
 @click.pass_context
 def cli(ctx: click.Context, model: str) -> None:
@@ -57,9 +59,31 @@ def ai(model: str, prompt: str) -> None:
 
 
 @cli.command()
-@click.option("-sm", "--sys-message", type=click.STRING)
+@click.option(
+    "-sm",
+    "--sys-message",
+    type=click.STRING,
+    help="Customize system message.",
+)
+@click.option(
+    "-e",
+    "--export",
+    type=click.File(mode="w", encoding="utf-8"),
+    help="File name to export chat history (JSON).",
+)
+@click.option(
+    "-h",
+    "--history",
+    type=click.File(encoding="utf-8"),
+    help="File name to import chat history (JSON).",
+)
 @click.pass_obj
-def chat(model: str, sys_message: str | None = None) -> None:
+def chat(
+    model: str,
+    sys_message: str | None = None,
+    export: click.File | None = None,
+    history: click.File | None = None,
+) -> None:
     """Chat with CodePilot"""
 
     # HF Inference client
@@ -68,8 +92,12 @@ def chat(model: str, sys_message: str | None = None) -> None:
     # Chat history
     messages: List[Dict[Literal["role", "content"] | str, str]] = []
 
+    # Import chat history if provided
+    if history:
+        messages = json.load(history)
+
     # Add system message if provided
-    if sys_message:
+    if sys_message and not history:
         messages.append({"role": "system", "content": sys_message})
 
     # Chat loop
@@ -102,11 +130,15 @@ def chat(model: str, sys_message: str | None = None) -> None:
             # Exit chat loop
             break
 
+    # Export chat history
+    if export:
+        json.dump(messages, export)
+
 
 @cli.command()
 @click.argument("code", type=click.STRING)
 @click.pass_obj
-def complete(model: str, code: str) -> None:
+def completions(model: str, code: str) -> None:
     """Get code completions from CodePilot"""
 
     client = InferenceClient(model)

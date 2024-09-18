@@ -39,12 +39,18 @@ Chat with CodePilot:
 
 ```bash
 python app.py chat
+
+# Export chat history
+python app.py chat -e chat.json
+
+# Export chat history
+python app.py chat -h chat.json
 ```
 
 Get code completions from CodePilot:
 
 ```bash
-python app.py complete 'def greet(name: str) -> str:'
+python app.py completions 'fn add(x: i32, y: i32) -> i32{'
 ```
 
 Use custom LLMs:
