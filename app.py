@@ -29,13 +29,27 @@ def cli(ctx: click.Context, model: str) -> None:
 @click.argument("prompt", type=click.STRING)
 @click.pass_obj
 def ai(model: str, prompt: str) -> None:
-    """Natural language interactions"""
+    """Generate shell commands using natural language"""
 
     client = InferenceClient(model)
 
     try:
-        response = client.text_generation(prompt, max_new_tokens=128)
-        click.echo(response)
+        response = client.chat_completion(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are CodePilot, an advanced AI coding assistant. "
+                    "Your task is to assist users with coding queries by providing clear explanations, code snippets, and debugging help. "
+                    "Always specify the programming language when applicable and ensure your responses are detailed yet concise. "
+                    "Keep interactions friendly and supportive.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=512,
+        )
+
+        click.secho("CodePilot: ", fg="green", nl=False)
+        click.echo(response.choices[0].message.content)
 
     except Exception as error:
         click.secho("Error: ", err=True, fg="red", nl=False)
@@ -46,7 +60,7 @@ def ai(model: str, prompt: str) -> None:
 @click.option("-sm", "--sys-message", type=click.STRING)
 @click.pass_obj
 def chat(model: str, sys_message: str | None = None) -> None:
-    """Start a chat session"""
+    """Chat with CodePilot"""
 
     # HF Inference client
     client = InferenceClient(model)
@@ -79,7 +93,7 @@ def chat(model: str, sys_message: str | None = None) -> None:
             messages.append({"role": "assistant", "content": llm_message})
 
             click.secho("CodePilot: ", fg="green", nl=False)
-            click.echo_via_pager(llm_message)
+            click.echo(llm_message)
 
         except Exception as error:
             click.secho("Error: ", err=True, fg="red", nl=False)
@@ -93,13 +107,15 @@ def chat(model: str, sys_message: str | None = None) -> None:
 @click.argument("code", type=click.STRING)
 @click.pass_obj
 def complete(model: str, code: str) -> None:
-    """Code completions with CodePilot"""
+    """Get code completions from CodePilot"""
 
     client = InferenceClient(model)
 
     try:
-        response = client.text_generation(code, max_new_tokens=128)
-        click.echo(response)
+        generated_code = client.text_generation(code, max_new_tokens=128)
+
+        click.secho("CodePilot: ", fg="green")
+        click.echo(code + generated_code)
 
     except Exception as error:
         click.secho("Error: ", err=True, fg="red", nl=False)

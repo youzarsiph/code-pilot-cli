@@ -5,9 +5,13 @@ description = "Your customizable codding assistant in your CLI"
 authors = ["Yousuf Abu Shanab <josephyousef249@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["app.py"]
+homepage = "https://github.com/youzarsiph/code-pilot-cli"
+repository = "https://github.com/youzarsiph/code-pilot-cli"
+documentation = "https://github.com/youzarsiph/code-pilot-cli"
 
 [tool.poetry.dependencies]
-python = "3.10"
+python = "^3.10"
 click = "^8.1.7"
 huggingface-hub = "^0.25.0"
 python-dotenv = "^1.0.1"
@@ -15,6 +19,9 @@ python-dotenv = "^1.0.1"
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
 ruff = "^0.6.5"
+
+[tool.poetry.scripts]
+code-pilot-cli = "app:cli"
 
 [build-system]
 requires = ["poetry-core"]
