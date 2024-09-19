@@ -43,7 +43,7 @@ python app.py chat
 # Export chat history
 python app.py chat -e chat.json
 
-# Export chat history
+# Import chat history
 python app.py chat -h chat.json
 ```
 
