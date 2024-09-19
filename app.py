@@ -18,7 +18,11 @@ from huggingface_hub import InferenceClient
 )
 @click.pass_context
 def cli(ctx: click.Context, model: str) -> None:
-    """CodePilot CLI"""
+    """
+    CodePilot CLI
+
+    Your customizable codding assistant in your CLI.
+    """
 
     # Load secrets
     load_dotenv(override=True)
@@ -31,8 +35,17 @@ def cli(ctx: click.Context, model: str) -> None:
 @click.argument("prompt", type=click.STRING)
 @click.pass_obj
 def ai(model: str, prompt: str) -> None:
-    """Generate shell commands using natural language"""
+    """
+    Generate shell commands using natural language
 
+    \b
+    Example:
+    ```bash
+    python app.py ai 'list the top 10 process in CPU usage'
+    ```
+    """
+
+    # HF Inference client
     client = InferenceClient(model)
 
     try:
@@ -50,12 +63,15 @@ def ai(model: str, prompt: str) -> None:
             max_tokens=512,
         )
 
-        click.secho("CodePilot: ", fg="green", nl=False)
-        click.echo(response.choices[0].message.content)
+        click.echo(
+            f"{click.style('CodePilot', fg='green', bold=True)}: {response.choices[0].message.content}"
+        )
 
     except Exception as error:
-        click.secho("Error: ", err=True, fg="red", nl=False)
-        click.echo(f"{error}", err=True)
+        click.echo(
+            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
+            err=True,
+        )
 
 
 @cli.command()
@@ -84,13 +100,27 @@ def chat(
     export: click.File | None = None,
     history: click.File | None = None,
 ) -> None:
-    """Chat with CodePilot"""
+    """
+    Chat with CodePilot
+
+    \b
+    Examples:
+    ```bash
+    python app.py chat
+    # Customize system message
+    python app.py chat -sm "You are a helpful coding assistant"
+    # Export chat history
+    python app.py chat -e chat_history.json
+    # Import chat history
+    python app.py chat -h chat_history.json
+    ```
+    """
 
     # HF Inference client
     client = InferenceClient(model)
 
     # Chat history
-    messages: List[Dict[Literal["role", "content"] | str, str]] = []
+    messages: List[Dict[Literal["role", "content"], str]] = []
 
     # Import chat history if provided
     if history:
@@ -103,8 +133,10 @@ def chat(
     # Chat loop
     while True:
         # User message
-        click.secho("You:", fg="green", nl=False)
-        message = click.prompt("", type=click.STRING, prompt_suffix="")
+        message = click.prompt(
+            click.style("You", fg="green", bold=True),
+            type=click.STRING,
+        )
 
         if message in ("exit", "quit"):
             break
@@ -120,12 +152,15 @@ def chat(
             # Add to chat history
             messages.append({"role": "assistant", "content": llm_message})
 
-            click.secho("CodePilot: ", fg="green", nl=False)
-            click.echo(llm_message)
+            click.echo(
+                f"{click.style('CodePilot', fg='green', bold=True)}: {llm_message}"
+            )
 
         except Exception as error:
-            click.secho("Error: ", err=True, fg="red", nl=False)
-            click.echo(f"{error}", err=True)
+            click.echo(
+                f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
+                err=True,
+            )
 
             # Exit chat loop
             break
@@ -139,20 +174,32 @@ def chat(
 @click.argument("code", type=click.STRING)
 @click.pass_obj
 def completions(model: str, code: str) -> None:
-    """Get code completions from CodePilot"""
+    """
+    Get code completions from CodePilot
 
+    \b
+    Example:
+    ```bash
+    python app.py completions 'fn read_file(path: PathBuf) -> Result<String, Error> {'
+    ```
+    """
+
+    # HF Inference client
     client = InferenceClient(model)
 
     try:
         generated_code = client.text_generation(code, max_new_tokens=128)
 
-        click.secho("CodePilot: ", fg="green")
-        click.echo(code + generated_code)
+        click.echo(
+            f"{click.style('CodePilot', fg='green', bold=True)}: {code + generated_code}"
+        )
 
     except Exception as error:
-        click.secho("Error: ", err=True, fg="red", nl=False)
-        click.echo(f"{error}", err=True)
+        click.echo(
+            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
+            err=True,
+        )
 
 
 if __name__ == "__main__":
-    cli()
+    cli(max_content_width=120)

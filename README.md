@@ -21,6 +21,25 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Create a `.env` file and add your `HF_TOKEN`:
+
+```bash
+# Create the file
+touch .env
+```
+
+Open the file in your editor:
+
+```bash
+HF_TOKEN = hf_**********************************
+```
+
+Or you can export your `HF_TOKEN` as an env variable.
+
+```bash
+export HF_TOKEN=hf_**********************************
+```
+
 ## Overview
 
 View help:
@@ -50,7 +69,7 @@ python app.py chat -h chat.json
 Get code completions from CodePilot:
 
 ```bash
-python app.py completions 'fn add(x: i32, y: i32) -> i32{'
+python app.py completions 'fn add(x: i32, y: i32) -> i32 {'
 ```
 
 Use custom LLMs:
