@@ -40,42 +40,57 @@ Or you can export your `HF_TOKEN` as an env variable.
 export HF_TOKEN=hf_**********************************
 ```
 
+Install poetry:
+
+```bash
+pip install poetry
+```
+
+Build the project:
+
+```bash
+poetry build
+poetry install
+```
+
+Now you are ready to go.
+
 ## Overview
 
 View help:
 
 ```bash
-python app.py --help
+code-pilot-cli --help
 ```
 
 Generate shell commands using natural language:
 
 ```bash
-python app.py ai 'list all files in the current directory'
+code-pilot-cli ai 'list all files in the current directory'
 ```
 
 Chat with CodePilot:
 
 ```bash
-python app.py chat
+code-pilot-cli chat
 
 # Export chat history
-python app.py chat -e chat.json
+code-pilot-cli chat -e chat.json
 
 # Import chat history
-python app.py chat -h chat.json
+code-pilot-cli chat -h chat.json
 ```
 
 Get code completions from CodePilot:
 
 ```bash
-python app.py completions 'fn add(x: i32, y: i32) -> i32 {'
+code-pilot-cli completions 'fn add(x: i32, y: i32) -> i32 {'
 ```
 
 Use custom LLMs:
 
 ```bash
-python app.py -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
+code-pilot-cli -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
 ```
 
 ## License

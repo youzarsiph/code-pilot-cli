@@ -130,6 +130,11 @@ def chat(
     if sys_message and not history:
         messages.append({"role": "system", "content": sys_message})
 
+    # Help message
+    click.echo(
+        f"""{click.style('CodePilot Chat', fg='green', bold=True)}\nType {click.style('exit', fg='red', bold=True)} or {click.style('quit', fg='red', bold=True)} to exit.\n"""
+    )
+
     # Chat loop
     while True:
         # User message

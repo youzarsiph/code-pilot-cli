@@ -9,6 +9,7 @@ include = ["app.py"]
 homepage = "https://github.com/youzarsiph/code-pilot-cli"
 repository = "https://github.com/youzarsiph/code-pilot-cli"
 documentation = "https://github.com/youzarsiph/code-pilot-cli"
+packages = [{ include = "app.py" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
