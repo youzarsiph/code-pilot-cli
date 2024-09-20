@@ -59,42 +59,42 @@ poetry install
 
 Now you are ready to go.
 
-## Overview
+## Usage
 
 View help:
 
 ```bash
-code-pilot-cli --help
+code-pilot --help
 ```
 
 Generate shell commands using natural language:
 
 ```bash
-code-pilot-cli ai 'list all files in the current directory'
+code-pilot ai 'list all files in the current directory'
 ```
 
 Chat with CodePilot:
 
 ```bash
-code-pilot-cli chat
+code-pilot chat
 
 # Export chat history
-code-pilot-cli chat -e chat.json
+code-pilot chat -e chat.json
 
 # Import chat history
-code-pilot-cli chat -h chat.json
+code-pilot chat -h chat.json
 ```
 
 Get code completions from CodePilot:
 
 ```bash
-code-pilot-cli completions 'fn add(x: i32, y: i32) -> i32 {'
+code-pilot completions 'fn add(x: i32, y: i32) -> i32 {'
 ```
 
 Use custom LLMs:
 
 ```bash
-code-pilot-cli -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
+code-pilot -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
 ```
 
 ## License

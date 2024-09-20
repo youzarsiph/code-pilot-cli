@@ -41,7 +41,7 @@ def ai(model: str, prompt: str) -> None:
     \b
     Example:
     ```bash
-    python app.py ai 'list the top 10 process in CPU usage'
+    code-pilot ai 'list the top 10 process in CPU usage'
     ```
     """
 
@@ -106,13 +106,13 @@ def chat(
     \b
     Examples:
     ```bash
-    python app.py chat
+    code-pilot chat
     # Customize system message
-    python app.py chat -sm "You are a helpful coding assistant"
+    code-pilot chat -sm "You are a helpful coding assistant"
     # Export chat history
-    python app.py chat -e chat_history.json
+    code-pilot chat -e chat_history.json
     # Import chat history
-    python app.py chat -h chat_history.json
+    code-pilot chat -h chat_history.json
     ```
     """
 
@@ -185,7 +185,7 @@ def completions(model: str, code: str) -> None:
     \b
     Example:
     ```bash
-    python app.py completions 'fn read_file(path: PathBuf) -> Result<String, Error> {'
+    code-pilot completions 'fn read_file(path: PathBuf) -> Result<String, Error> {'
     ```
     """
 

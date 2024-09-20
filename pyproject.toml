@@ -22,7 +22,7 @@ black = "^24.8.0"
 ruff = "^0.6.5"
 
 [tool.poetry.scripts]
-code-pilot-cli = "app:cli"
+code-pilot = "app:cli"
 
 [build-system]
 requires = ["poetry-core"]
