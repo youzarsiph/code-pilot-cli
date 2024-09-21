@@ -1,7 +1,7 @@
 """ CodePilot CLI """
 
 import json
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 import click
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
@@ -96,9 +96,9 @@ def ai(model: str, prompt: str) -> None:
 @click.pass_obj
 def chat(
     model: str,
-    sys_message: str | None = None,
-    export: click.File | None = None,
-    history: click.File | None = None,
+    sys_message: Optional[str] = None,
+    export: Optional[click.File] = None,
+    history: Optional[click.File] = None,
 ) -> None:
     """
     Chat with CodePilot
@@ -132,7 +132,8 @@ def chat(
 
     # Help message
     click.echo(
-        f"""{click.style('CodePilot Chat', fg='green', bold=True)}\nType {click.style('exit', fg='red', bold=True)} or {click.style('quit', fg='red', bold=True)} to exit.\n"""
+        f"{click.style('CodePilot Chat', fg='green', bold=True)}\n"
+        f"Type {click.style('exit', fg='red', bold=True)} or {click.style('quit', fg='red', bold=True)} to exit.\n"
     )
 
     # Chat loop
@@ -158,7 +159,7 @@ def chat(
             messages.append({"role": "assistant", "content": llm_message})
 
             click.echo(
-                f"{click.style('CodePilot', fg='green', bold=True)}: {llm_message}"
+                f"{click.style('CodePilot', fg='green', bold=True)}: {llm_message}\n"
             )
 
         except Exception as error:
@@ -196,7 +197,7 @@ def completions(model: str, code: str) -> None:
         generated_code = client.text_generation(code, max_new_tokens=128)
 
         click.echo(
-            f"{click.style('CodePilot', fg='green', bold=True)}: {code + generated_code}"
+            f"{click.style('CodePilot', fg='green', bold=True)}:\n{code + generated_code}"
         )
 
     except Exception as error:
