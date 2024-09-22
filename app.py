@@ -6,6 +6,10 @@ import click
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 
+# Constants
+CHAT_LLM = "HuggingFaceH4/starchat2-15b-v0.1"
+CODE_LLM = "bigcode/starcoder2-15b"
+
 
 @click.group()
 @click.option(
@@ -13,7 +17,7 @@ from huggingface_hub import InferenceClient
     "--model",
     type=click.STRING,
     show_default=True,
-    default="HuggingFaceH4/starchat2-15b-v0.1",
+    default=CHAT_LLM,
     help="Customize the LLM.",
 )
 @click.pass_context
@@ -191,13 +195,59 @@ def completions(model: str, code: str) -> None:
     """
 
     # HF Inference client
-    client = InferenceClient(model)
+    client = InferenceClient(model if model != CHAT_LLM else CODE_LLM)
 
     try:
         generated_code = client.text_generation(code, max_new_tokens=128)
 
         click.echo(
             f"{click.style('CodePilot', fg='green', bold=True)}:\n{code + generated_code}"
+        )
+
+    except Exception as error:
+        click.echo(
+            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
+            err=True,
+        )
+
+
+@cli.command()
+@click.argument("code", type=click.File(encoding="utf-8"))
+@click.pass_obj
+def scan(model: str, code: click.File) -> None:
+    """
+    Perform code scanning with CodePilot
+
+    \b
+    Example:
+    ```bash
+    code-pilot scan code.py
+    ```
+    """
+
+    # HF Inference client
+    client = InferenceClient(model)
+
+    try:
+        response = client.chat_completion(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are CodePilot, an advanced AI coding assistant.",
+                },
+                {
+                    "role": "user",
+                    "content": "Please analyze the provided codebase for potential security vulnerabilities, "
+                    "using best practices and industry-standard rules. Highlight the most critical issues. "
+                    "Share suggestions for code fixes and provide detailed explanations for each detected "
+                    f"vulnerability with the fixed version of code:\n{code.read()}",
+                },
+            ],
+            max_tokens=512,
+        )
+
+        click.echo(
+            f"{click.style('CodePilot', fg='green', bold=True)}: {response.choices[0].message.content}"
         )
 
     except Exception as error:

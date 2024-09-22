@@ -67,23 +67,32 @@ View help:
 code-pilot --help
 ```
 
+### Generate commands
+
 Generate shell commands using natural language:
 
 ```bash
 code-pilot ai 'list all files in the current directory'
 ```
 
+### Chat
+
 Chat with CodePilot:
 
 ```bash
 code-pilot chat
 
+# Custom system message
+code-pilot chat -sm 'You are a helpful assistant'
+
 # Export chat history
-code-pilot chat -e chat.json
+code-pilot chat -e chat_history.json
 
 # Import chat history
-code-pilot chat -h chat.json
+code-pilot chat -h chat_history.json
 ```
+
+### Code completions
 
 Get code completions from CodePilot:
 
@@ -91,10 +100,20 @@ Get code completions from CodePilot:
 code-pilot completions 'fn add(x: i32, y: i32) -> i32 {'
 ```
 
+### Custom LLMs
+
 Use custom LLMs:
 
 ```bash
 code-pilot -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
+```
+
+### Perform code scans
+
+Check code for potential security vulnerabilities:
+
+```bash
+code-pilot scan app.py
 ```
 
 ## License
