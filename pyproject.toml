@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "code-pilot-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "Your customizable codding assistant in your CLI"
 authors = ["Yousuf Abu Shanab <josephyousef249@gmail.com>"]
 license = "MIT"

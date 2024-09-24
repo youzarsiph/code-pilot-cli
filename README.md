@@ -13,49 +13,24 @@ Your customizable coding assistant for the command line interface (CLI).
 
 ## Getting Started
 
-To begin, clone the repository:
+To begin, install the package:
 
 ```bash
-git clone https://github.com/youzarsiph/code-pilot-cli
-cd code-pilot-cli
+pip install code-pilot-cli
 ```
 
-Next, install the required dependencies:
+Export your `HF_TOKEN` as an environment variable, you can get your token from [HuggingFace](https://huggingface.co/settings/tokens):
 
-```bash
-pip install -r requirements.txt
-```
-
-Create a `.env` file and include your `HF_TOKEN`:
-
-```bash
-# Create the file
-touch .env
-```
-
-Open the file in your preferred text editor:
-
-```bash
-HF_TOKEN=hf_**********************************
-```
-
-Alternatively, you may export your `HF_TOKEN` as an environment variable:
+Bash:
 
 ```bash
 export HF_TOKEN=hf_**********************************
 ```
 
-Install Poetry for dependency management:
+Powershell:
 
-```bash
-pip install poetry
-```
-
-Build and install the project:
-
-```bash
-poetry build
-poetry install
+```powershell
+$env:HF_TOKEN = "hf_**********************************"
 ```
 
 You are now ready to utilize the application.
