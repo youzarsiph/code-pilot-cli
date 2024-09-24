@@ -3,7 +3,6 @@
 import json
 from typing import Annotated, Dict, List, Literal, Optional
 import typer
-from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 from rich import print
 from rich.console import Console
@@ -295,7 +294,4 @@ def scan(
 
 
 if __name__ == "__main__":
-    # Load environment variables
-    load_dotenv(override=True)
-
     code_pilot()
