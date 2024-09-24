@@ -1,6 +1,7 @@
 # code-pilot-cli
 
 [![CI](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml)
+[![CD](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml)
 [![Black](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml)
 [![Ruff](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml)
 
@@ -86,10 +87,13 @@ code-pilot chat
 code-pilot chat -sm 'You are a helpful assistant'
 
 # Export chat history
-code-pilot chat -e chat_history.json
+code-pilot chat -e chat-history.json
 
 # Import chat history
-code-pilot chat -h chat_history.json
+code-pilot chat -h chat-history.json
+
+# Import chat history then export it after chat session
+code-pilot chat -h chat-history.json -e chat-history.json
 ```
 
 ### Code completions
@@ -105,7 +109,7 @@ code-pilot completions 'fn add(x: i32, y: i32) -> i32 {'
 Use custom LLMs:
 
 ```bash
-code-pilot -m 'mistralai/Mistral-Nemo-Instruct-2407' chat
+code-pilot chat -m 'mistralai/Mistral-Nemo-Instruct-2407'
 ```
 
 ### Perform code scans

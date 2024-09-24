@@ -1,261 +1,301 @@
 """ CodePilot CLI """
 
 import json
-from typing import Dict, List, Literal, Optional
-import click
+from typing import Annotated, Dict, List, Literal, Optional
+import typer
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
+from rich import print
+from rich.console import Console
+from rich.syntax import Syntax
 
 # Constants
 CHAT_LLM = "HuggingFaceH4/starchat2-15b-v0.1"
-CODE_LLM = "bigcode/starcoder2-15b"
+COMPLETION_LLM = "bigcode/starcoder2-15b"
+SYSTEM_MESSAGE = {
+    "role": "system",
+    "content": "You are CodePilot, an advanced coding assistant powered by "
+    "state-of-the-art Large Language Models, and specifically optimized for enhanced "
+    "performance in coding tasks.",
+}
 
 
-@click.group()
-@click.option(
-    "-m",
-    "--model",
-    type=click.STRING,
-    show_default=True,
-    default=CHAT_LLM,
-    help="Customize the LLM.",
+# CLI
+code_pilot = typer.Typer(
+    name="code-pilot",
+    no_args_is_help=True,
+    rich_markup_mode="rich",
+    help="CodePilot CLI. CodePilot is an advanced AI-powered customizable coding assistant.",
 )
-@click.pass_context
-def cli(ctx: click.Context, model: str) -> None:
+
+
+# Syntax Highlighting
+def print_highlighted(code: str) -> None:
     """
-    CodePilot CLI
+    Highlight and print the provided code.
 
-    Your customizable codding assistant in your CLI.
-    """
-
-    # Load secrets
-    load_dotenv(override=True)
-
-    # Add model to context
-    ctx.obj = model
-
-
-@cli.command()
-@click.argument("prompt", type=click.STRING)
-@click.pass_obj
-def ai(model: str, prompt: str) -> None:
-    """
-    Generate shell commands using natural language
-
-    \b
-    Example:
-    ```bash
-    code-pilot ai 'list the top 10 process in CPU usage'
-    ```
+    Args:
+        code (str): The code to be highlighted and printed.
     """
 
-    # HF Inference client
+    console = Console()
+    highlighted_code = Syntax(
+        code,
+        "markdown",
+        theme="github-dark",
+        code_width=120,
+        word_wrap=True,
+        background_color="default",
+    )
+
+    console.print(highlighted_code)
+
+
+@code_pilot.command(no_args_is_help=True)
+def ai(
+    prompt: Annotated[
+        str, typer.Argument(help="Natural language prompt for command generation.")
+    ],
+    model: Annotated[
+        str,
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = CHAT_LLM,
+) -> None:
+    """
+    Generate shell commands based on a natural language prompt.
+
+    Args:
+        prompt (str): The natural language prompt from which to generate a command.
+    """
+
     client = InferenceClient(model)
 
     try:
         response = client.chat_completion(
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are CodePilot, an advanced AI coding assistant. "
-                    "Your task is to assist users with coding queries by providing clear explanations, code snippets, and debugging help. "
-                    "Always specify the programming language when applicable and ensure your responses are detailed yet concise. "
-                    "Keep interactions friendly and supportive.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=512,
+            messages=[SYSTEM_MESSAGE, {"role": "user", "content": prompt}],
+            max_tokens=1024,
         )
 
-        click.echo(
-            f"{click.style('CodePilot', fg='green', bold=True)}: {response.choices[0].message.content}"
-        )
+        print("[bold green]CodePilot[/bold green]:")
+        print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
-        click.echo(
-            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
-            err=True,
-        )
+        print(f"[bold red]Error[/bold red]: {error}")
 
 
-@cli.command()
-@click.option(
-    "-sm",
-    "--sys-message",
-    type=click.STRING,
-    help="Customize system message.",
-)
-@click.option(
-    "-e",
-    "--export",
-    type=click.File(mode="w", encoding="utf-8"),
-    help="File name to export chat history (JSON).",
-)
-@click.option(
-    "-h",
-    "--history",
-    type=click.File(encoding="utf-8"),
-    help="File name to import chat history (JSON).",
-)
-@click.pass_obj
+@code_pilot.command()
 def chat(
-    model: str,
-    sys_message: Optional[str] = None,
-    export: Optional[click.File] = None,
-    history: Optional[click.File] = None,
+    model: Annotated[
+        str,
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = CHAT_LLM,
+    export: Annotated[
+        Optional[typer.FileTextWrite],
+        typer.Option(
+            "--export",
+            "-e",
+            help="File to export chat history.",
+            encoding="utf-8",
+        ),
+    ] = None,
+    history: Annotated[
+        Optional[typer.FileText],
+        typer.Option(
+            "--history",
+            "-h",
+            help="File to import previous chat history.",
+            encoding="utf-8",
+        ),
+    ] = None,
 ) -> None:
     """
-    Chat with CodePilot
+    Engage in a chat session with CodePilot.
 
-    \b
-    Examples:
-    ```bash
-    code-pilot chat
-    # Customize system message
-    code-pilot chat -sm "You are a helpful coding assistant"
-    # Export chat history
-    code-pilot chat -e chat_history.json
-    # Import chat history
-    code-pilot chat -h chat_history.json
-    ```
+    Args:
+        export (Optional[typer.FileTextWrite]): Optional file to save chat history.
+        history (Optional[typer.FileText]): Optional file to load previous chat history.
     """
 
-    # HF Inference client
     client = InferenceClient(model)
 
-    # Chat history
-    messages: List[Dict[Literal["role", "content"], str]] = []
+    messages: List[Dict[Literal["role", "content"], str]] = [SYSTEM_MESSAGE]
 
-    # Import chat history if provided
     if history:
         messages = json.load(history)
 
-    # Add system message if provided
-    if sys_message and not history:
-        messages.append({"role": "system", "content": sys_message})
-
-    # Help message
-    click.echo(
-        f"{click.style('CodePilot Chat', fg='green', bold=True)}\n"
-        f"Type {click.style('exit', fg='red', bold=True)} or {click.style('quit', fg='red', bold=True)} to exit.\n"
+    print(
+        "CodePilot Chat\n"
+        "Type [bold red]exit[/bold red] or [bold red]quit[/bold red] to exit\n"
     )
 
-    # Chat loop
     while True:
-        # User message
-        message = click.prompt(
-            click.style("You", fg="green", bold=True),
-            type=click.STRING,
+        message = typer.prompt(
+            typer.style("You", fg=typer.colors.CYAN, bold=True),
+            type=str,
         )
 
         if message in ("exit", "quit"):
             break
 
-        # Add to chat history
         messages.append({"role": "user", "content": message})
 
         try:
-            # LLM message
-            response = client.chat_completion(messages=messages, max_tokens=1024)
+            response = client.chat_completion(messages=messages, max_tokens=2048)
             llm_message = str(response.choices[0].message.content)
 
-            # Add to chat history
             messages.append({"role": "assistant", "content": llm_message})
 
-            click.echo(
-                f"{click.style('CodePilot', fg='green', bold=True)}: {llm_message}\n"
-            )
+            print("[bold green]CodePilot[/bold green]:")
+            print_highlighted(llm_message)
 
         except Exception as error:
-            click.echo(
-                f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
-                err=True,
-            )
-
-            # Exit chat loop
+            print(f"[bold red]Error[/bold red]: {error}")
             break
 
-    # Export chat history
     if export:
-        json.dump(messages, export)
+        json.dump(messages, export, indent=2)
 
 
-@cli.command()
-@click.argument("code", type=click.STRING)
-@click.pass_obj
-def completions(model: str, code: str) -> None:
+@code_pilot.command(no_args_is_help=True)
+def completions(
+    code: Annotated[str, typer.Argument(help="Code snippet to complete.")],
+    model: Annotated[
+        str,
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = COMPLETION_LLM,
+) -> None:
     """
-    Get code completions from CodePilot
+    Generate code completions based on the provided code snippet.
 
-    \b
-    Example:
-    ```bash
-    code-pilot completions 'fn read_file(path: PathBuf) -> Result<String, Error> {'
-    ```
+    Args:
+        code (str): The code to complete.
     """
 
-    # HF Inference client
-    client = InferenceClient(model if model != CHAT_LLM else CODE_LLM)
+    client = InferenceClient(COMPLETION_LLM)
 
     try:
-        generated_code = client.text_generation(code, max_new_tokens=128)
+        generated_code = client.text_generation(code, max_new_tokens=1024)
 
-        click.echo(
-            f"{click.style('CodePilot', fg='green', bold=True)}:\n{code + generated_code}"
-        )
+        print("[bold green]CodePilot[/bold green]:")
+        print_highlighted(code + generated_code)
 
     except Exception as error:
-        click.echo(
-            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
-            err=True,
-        )
+        print(f"[bold red]Error[/bold red]: {error}")
 
 
-@cli.command()
-@click.argument("code", type=click.File(encoding="utf-8"))
-@click.pass_obj
-def scan(model: str, code: click.File) -> None:
+@code_pilot.command(no_args_is_help=True)
+def enhance(
+    code: Annotated[
+        typer.FileText,
+        typer.Argument(
+            help="File containing code to enhance for quality improvements."
+        ),
+    ],
+    model: Annotated[
+        str,
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = CHAT_LLM,
+) -> None:
     """
-    Perform code scanning with CodePilot
+    Improve code quality by applying best practices.
 
-    \b
-    Example:
-    ```bash
-    code-pilot scan code.py
-    ```
+    Args:
+        code (typer.FileText): The file containing code to be enhanced.
     """
 
-    # HF Inference client
     client = InferenceClient(model)
 
     try:
         response = client.chat_completion(
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are CodePilot, an advanced AI coding assistant.",
-                },
+                SYSTEM_MESSAGE,
                 {
                     "role": "user",
-                    "content": "Please analyze the provided codebase for potential security vulnerabilities, "
-                    "using best practices and industry-standard rules. Highlight the most critical issues. "
-                    "Share suggestions for code fixes and provide detailed explanations for each detected "
-                    f"vulnerability with the fixed version of code:\n{code.read()}",
+                    "content": "Apply best practices, enhancements, and industry standards to the provided "
+                    f"code to make it more efficient, secure, and maintainable:\n{code.read()}",
                 },
             ],
-            max_tokens=512,
+            max_tokens=2048,
         )
 
-        click.echo(
-            f"{click.style('CodePilot', fg='green', bold=True)}: {response.choices[0].message.content}"
-        )
+        print("[bold green]CodePilot[/bold green]:")
+        print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
-        click.echo(
-            f"{click.style('Error', fg='red', bold=True, underline=True)}: {error}",
-            err=True,
+        print(f"[bold red]Error[/bold red]: {error}")
+
+
+@code_pilot.command(no_args_is_help=True)
+def scan(
+    code: Annotated[
+        typer.FileText,
+        typer.Argument(help="File containing code to scan for vulnerabilities."),
+    ],
+    model: Annotated[
+        str,
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = CHAT_LLM,
+) -> None:
+    """
+    Scan the provided code for security vulnerabilities.
+
+    Args:
+        code (typer.FileText): The file containing code to be scanned.
+    """
+
+    client = InferenceClient(model)
+
+    try:
+        response = client.chat_completion(
+            messages=[
+                SYSTEM_MESSAGE,
+                {
+                    "role": "user",
+                    "content": f"Perform a code scan to identify security vulnerabilities:\n{code.read()}",
+                },
+            ],
+            max_tokens=1024,
         )
+
+        print("[bold green]CodePilot[/bold green]:")
+        print_highlighted(response.choices[0].message.content)
+
+    except Exception as error:
+        print(f"[bold red]Error[/bold red]: {error}")
 
 
 if __name__ == "__main__":
-    cli(max_content_width=120)
+    # Load environment variables
+    load_dotenv(override=True)
+
+    code_pilot()
