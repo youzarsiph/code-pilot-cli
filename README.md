@@ -56,10 +56,7 @@ code-pilot ai 'list all files in the current directory'
 Engage in a chat with CodePilot:
 
 ```bash
-code-pilot chat
-
-# Custom system message
-code-pilot chat -sm 'You are a helpful assistant'
+code-pilot chat --
 
 # Export chat history
 code-pilot chat -e chat-history.json
