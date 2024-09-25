@@ -22,4 +22,4 @@ jobs:
 
       - name: Run the app
         run: |
-          python app.py --help
+          python code_pilot_cli --help

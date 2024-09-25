@@ -9,7 +9,7 @@ code_pilot = typer.Typer(
     name="code-pilot",
     no_args_is_help=True,
     rich_markup_mode="rich",
-    help="CodePilot CLI. CodePilot is an advanced AI-powered customizable coding assistant.",
+    help="CodePilot CLI, an advanced AI-powered customizable coding assistant.",
 )
 
 for command in command_list:

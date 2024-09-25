@@ -64,7 +64,7 @@ def chat(
             type=str,
         )
 
-        if message in ("exit", "quit"):
+        if message.lower() in ("exit", "quit"):
             break
 
         messages.append({"role": "user", "content": message})
