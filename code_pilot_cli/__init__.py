@@ -31,11 +31,12 @@ def print_highlighted(code: str) -> None:
     """
 
     console = Console()
-    md = Markdown(code, code_theme="github", justify="left")
+    md = Markdown(code, code_theme="github-dark", justify="left")
 
     console.print(
         Panel(
             md,
+            padding=1,
             title_align="left",
             title="[bold green]CodePilot[/bold green]",
         )
