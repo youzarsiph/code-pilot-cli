@@ -32,7 +32,6 @@ def completions(
     try:
         generated_code = client.text_generation(code, max_new_tokens=1024)
 
-        print("[bold green]CodePilot[/bold green]:")
         print_highlighted(code + generated_code)
 
     except Exception as error:

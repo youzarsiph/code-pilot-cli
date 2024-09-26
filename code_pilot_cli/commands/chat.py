@@ -57,6 +57,13 @@ def chat(
         "CodePilot Chat\n"
         "Type [bold red]exit[/bold red] or [bold red]quit[/bold red] to exit\n"
     )
+    print_highlighted(
+        "Hey there, human! I'm CodePilot here, and I'm here to assist you with all coding-related needs. "
+        "Feel free to ask questions, share ideas, or provide your Python code for a run! I'll optimize it "
+        "with cutting-edge AI techniques like Overcode Detection and Enhancedsecrets Support, in order to "
+        "provide the best services for you, while maintaining confidentiality and security. "
+        "Have a great coding journey! 🚀 Let's get started!"
+    )
 
     while True:
         message = typer.prompt(
@@ -75,7 +82,6 @@ def chat(
 
             messages.append({"role": "assistant", "content": llm_message})
 
-            print("[bold green]CodePilot[/bold green]:")
             print_highlighted(llm_message)
 
         except Exception as error:

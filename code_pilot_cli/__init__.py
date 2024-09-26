@@ -3,7 +3,8 @@ CodePilot CLI: Your customizable coding assistant for the command line interface
 """
 
 from rich.console import Console
-from rich.syntax import Syntax
+from rich.markdown import Markdown
+from rich.panel import Panel
 
 
 # Constants
@@ -24,16 +25,18 @@ def print_highlighted(code: str) -> None:
 
     Args:
         code (str): The code to be highlighted and printed.
+
+    Returns:
+        None
     """
 
     console = Console()
-    highlighted_code = Syntax(
-        code,
-        "markdown",
-        theme="github-dark",
-        code_width=120,
-        word_wrap=True,
-        background_color="default",
-    )
+    md = Markdown(code, code_theme="github", justify="left")
 
-    console.print(highlighted_code)
+    console.print(
+        Panel(
+            md,
+            title_align="left",
+            title="[bold green]CodePilot[/bold green]",
+        )
+    )

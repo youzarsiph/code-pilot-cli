@@ -37,7 +37,6 @@ def ai(
             max_tokens=1024,
         )
 
-        print("[bold green]CodePilot[/bold green]:")
         print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
