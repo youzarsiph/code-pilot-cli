@@ -36,7 +36,6 @@ def print_highlighted(code: str) -> None:
     console.print(
         Panel(
             md,
-            padding=1,
             title_align="left",
             title="[bold green]CodePilot[/bold green]",
         )

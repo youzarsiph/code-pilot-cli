@@ -27,7 +27,7 @@ def completions(
         code (str): The code to complete.
     """
 
-    client = InferenceClient(COMPLETION_LLM)
+    client = InferenceClient(model)
 
     try:
         generated_code = client.text_generation(code, max_new_tokens=1024)
