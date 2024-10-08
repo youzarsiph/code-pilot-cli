@@ -1,6 +1,6 @@
 """ Command to perform code scanning """
 
-from typing import Annotated
+from typing import Annotated, Optional
 import typer
 from huggingface_hub import InferenceClient
 from rich import print
@@ -13,7 +13,7 @@ def scan(
         typer.Argument(help="File containing code to scan for vulnerabilities."),
     ],
     model: Annotated[
-        str,
+        Optional[str],
         typer.Option(
             "--model",
             "-m",
@@ -28,6 +28,16 @@ def scan(
 
     Args:
         code (typer.FileText): The file containing code to be scanned.
+        model (str, optional): The model to run inference with. Defaults to CHAT_LLM.
+
+    Examples:
+    ```shell
+    # Scan a code file
+    code-pilot scan code.py
+
+    # Scan a code file using a specific model
+    code-pilot scan code.py -m meta-llama/Llama-3.2-3B-Instruct
+    ```
     """
 
     client = InferenceClient(model)
@@ -38,10 +48,14 @@ def scan(
                 SYSTEM_MESSAGE,
                 {
                     "role": "user",
-                    "content": f"Perform a code scan to identify security vulnerabilities:\n{code.read()}",
+                    "content": "As a an expert software engineer and cybersecurity engineer "
+                    "that puts code into production in large scale systems. Your job is to ensure "
+                    "that code runs effectively, quickly, at scale, and securely. Please perform a "
+                    "code scan to identify potential security vulnerabilities in the provided code:"
+                    f"\n{code.read()}",
                 },
             ],
-            max_tokens=1024,
+            max_tokens=2048,
         )
 
         print_highlighted(response.choices[0].message.content)

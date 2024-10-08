@@ -1,4 +1,4 @@
-""" Command to improve code quality """
+""" Command to perform code reviews """
 
 from typing import Annotated, Optional
 import typer
@@ -7,12 +7,10 @@ from rich import print
 from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, print_highlighted
 
 
-def enhance(
+def document(
     code: Annotated[
         typer.FileText,
-        typer.Argument(
-            help="File containing code to enhance for quality improvements."
-        ),
+        typer.Argument(help="File containing code to add documentation."),
     ],
     model: Annotated[
         Optional[str],
@@ -26,19 +24,18 @@ def enhance(
     ] = CHAT_LLM,
 ) -> None:
     """
-    Improve code quality by applying best practices.
+    Add documentation to the provided code.
 
     Args:
-        code (typer.FileText): The file containing code to be enhanced.
-        model (str, optional): The model to run inference with. Defaults to CHAT_LLM.
+        code (typer.FileText): The file containing code to be documented.
 
     Examples:
     ```shell
-    # Generate code completions
-    code-pilot enhance code.py
+    # Document code.py
+    code-pilot document code.py
 
-    # Generate code completions with a specific model
-    code-pilot enhance code.py -m meta-llama/Llama-3.2-3B-Instruct
+    # Document code.py using a specific model
+    code-pilot document code.py -m meta-llama/Llama-3.2-3B-Instruct
     ```
     """
 
@@ -52,10 +49,12 @@ def enhance(
                     "role": "user",
                     "content": "As a an expert software engineer and site reliability engineer "
                     "that puts code into production in large scale systems. Your job is to ensure "
-                    "that code runs effectively, quickly, at scale, and securely. Please profile it, "
-                    "and find any issues that need to be fixed or updated. Also apply best practices, "
-                    "enhancements, and industry standards to the provided code to make it more efficient, "
-                    f"secure, and maintainable:\n{code.read()}",
+                    "that code runs effectively, quickly, at scale, and securely. Please document the "
+                    "provided code, including any potential issues or improvements that could be made, "
+                    "and provide the updated code with the documentation included. The documentation "
+                    "should include docstrings, comments, and any other relevant information that could "
+                    "help developers better understand the code's purpose, functionality, and behavior:\n"
+                    f"{code.read()}",
                 },
             ],
             max_tokens=2048,

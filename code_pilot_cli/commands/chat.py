@@ -9,16 +9,6 @@ from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, print_highlighted
 
 
 def chat(
-    model: Annotated[
-        str,
-        typer.Option(
-            "--model",
-            "-m",
-            help="The model to run inference with. Can be a model id hosted on the "
-            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
-            "to a deployed Inference Endpoint.",
-        ),
-    ] = CHAT_LLM,
     export: Annotated[
         Optional[typer.FileTextWrite],
         typer.Option(
@@ -37,13 +27,42 @@ def chat(
             encoding="utf-8",
         ),
     ] = None,
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model",
+            "-m",
+            help="The model to run inference with. Can be a model id hosted on the "
+            "Hugging Face Hub, e.g. meta-llama/Meta-Llama-3-8B-Instruct or a URL "
+            "to a deployed Inference Endpoint.",
+        ),
+    ] = CHAT_LLM,
 ) -> None:
     """
     Engage in a chat session with CodePilot.
 
     Args:
-        export (Optional[typer.FileTextWrite]): Optional file to save chat history.
-        history (Optional[typer.FileText]): Optional file to load previous chat history.
+        export (typer.FileTextWrite, optional): Optional file to save chat history.
+        history (typer.FileText, optional): Optional file to load previous chat history.
+        model (str, optional): The model to run inference with.
+
+    Examples:
+    ```shell
+    # Start chatting
+    code-pilot chat --
+
+    # Export chat history
+    code-pilot chat -e chat_history.json
+
+    # Import chat history
+    code-pilot chat -h chat_history.json
+
+    # Import chat history then export it after the chat session
+    code-pilot chat -h chat_history.json -e chat_history.json
+
+    # Change the model
+    code-pilot chat -m meta-llama/Llama-3.2-3B-Instruct
+    ```
     """
 
     client = InferenceClient(model)
@@ -53,16 +72,9 @@ def chat(
     if history:
         messages = json.load(history)
 
-    print(
-        "CodePilot Chat\n"
-        "Type [bold red]exit[/bold red] or [bold red]quit[/bold red] to exit\n"
-    )
     print_highlighted(
-        "Hey there, human! I'm CodePilot here, and I'm here to assist you with all coding-related needs. "
-        "Feel free to ask questions, share ideas, or provide your Python code for a run! I'll optimize it "
-        "with cutting-edge AI techniques like Overcode Detection and Enhancedsecrets Support, in order to "
-        "provide the best services for you, while maintaining confidentiality and security. "
-        "Have a great coding journey! 🚀 Let's get started!"
+        "Hi, how I can assist you today?",
+        "Type 'exit' or 'quit' to end the chat.",
     )
 
     while True:

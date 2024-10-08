@@ -1,11 +1,10 @@
 [tool.poetry]
 name = "code-pilot-cli"
-version = "0.1.8"
+version = "0.1.9"
 description = "Your customizable codding assistant in your CLI"
 authors = ["Yousuf Abu Shanab <josephyousef249@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-include = ["app.py"]
 homepage = "https://github.com/youzarsiph/code-pilot-cli"
 repository = "https://github.com/youzarsiph/code-pilot-cli"
 documentation = "https://github.com/youzarsiph/code-pilot-cli"
