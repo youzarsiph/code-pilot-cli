@@ -14,6 +14,15 @@ def enhance(
             help="File containing code to enhance for quality improvements."
         ),
     ],
+    output: Annotated[
+        Optional[typer.FileTextWrite],
+        typer.Option(
+            "--output",
+            "-o",
+            help="Output file to write the response to.",
+            encoding="utf-8",
+        ),
+    ] = None,
     model: Annotated[
         Optional[str],
         typer.Option(
@@ -30,15 +39,22 @@ def enhance(
 
     Args:
         code (typer.FileText): The file containing code to be enhanced.
-        model (str, optional): The model to run inference with. Defaults to CHAT_LLM.
+        output (typer.FileTextWrite, optional): The file to write the response to.
+        model (str, optional): The model to run inference with.
+
+    Returns:
+        None
 
     Examples:
     ```shell
     # Generate code completions
-    code-pilot enhance code.py
+    code-pilot enhance src/lib.rs
+
+    # Save the output to a markdown file
+    code-pilot enhance app/models.py -o enhancements.md
 
     # Generate code completions with a specific model
-    code-pilot enhance code.py -m meta-llama/Llama-3.2-3B-Instruct
+    code-pilot enhance App.tsx -m meta-llama/Llama-3.2-3B-Instruct
     ```
     """
 
@@ -61,7 +77,14 @@ def enhance(
             max_tokens=2048,
         )
 
-        print_highlighted(response.choices[0].message.content)
+        if output:
+            with output as file:
+                file.write(response.choices[0].message.content)
+
+            print(f"Output [bold green]saved[/bold green] to {output.name}.")
+
+        else:
+            print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")

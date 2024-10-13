@@ -1,4 +1,4 @@
-""" Command to perform code reviews """
+""" Generate tests for code """
 
 from typing import Annotated, Optional
 import typer
@@ -7,10 +7,10 @@ from rich import print
 from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, print_highlighted
 
 
-def document(
+def test(
     code: Annotated[
         typer.FileText,
-        typer.Argument(help="File containing code to add documentation."),
+        typer.Argument(help="File containing code to generate tests for."),
     ],
     output: Annotated[
         Optional[typer.FileTextWrite],
@@ -33,7 +33,7 @@ def document(
     ] = CHAT_LLM,
 ) -> None:
     """
-    Add documentation to the provided code.
+    Generate tests for the provided code.
 
     Args:
         code (typer.FileText): The file containing code to be documented.
@@ -45,14 +45,14 @@ def document(
 
     Examples:
     ```shell
-    # Document code.py
-    code-pilot document src/lib.rs
+    # Generate test
+    code-pilot test src/main.rs
 
     # Save the output to a markdown file
-    code-pilot document polls/models.py -o code-docs.md
+    code-pilot test app/models.py -o code-tests.md
 
-    # Document code.py using a specific model
-    code-pilot document urls.py -m meta-llama/Llama-3.2-3B-Instruct
+    # Generate test with a specific model
+    code-pilot test App.tsx -m meta-llama/Llama-3.2-3B-Instruct
     ```
     """
 
@@ -64,13 +64,12 @@ def document(
                 SYSTEM_MESSAGE,
                 {
                     "role": "user",
-                    "content": "As a an expert software engineer and site reliability engineer "
+                    "content": "As a an expert software engineer and quality assurance engineer "
                     "that puts code into production in large scale systems. Your job is to ensure "
-                    "that code runs effectively, quickly, at scale, and securely. Please document the "
-                    "provided code, including any potential issues or improvements that could be made, "
-                    "and provide the updated code with the documentation included. The documentation "
-                    "should include docstrings, comments, and any other relevant information that could "
-                    "help developers better understand the code's purpose, functionality, and behavior:\n"
+                    "that code runs effectively, quickly, at scale, and securely. Please generate tests "
+                    "for the provided code, including any potential issues or improvements that could be made, "
+                    "and provide the updated code with the tests included. The tests should cover edge cases, "
+                    "error handling, and any other relevant information that could help with the code's functionality:"
                     f"{code.read()}",
                 },
             ],

@@ -12,6 +12,15 @@ def review(
         typer.FileText,
         typer.Argument(help="File containing code to review for quality improvements."),
     ],
+    output: Annotated[
+        Optional[typer.FileTextWrite],
+        typer.Option(
+            "--output",
+            "-o",
+            help="Output file to write the response to.",
+            encoding="utf-8",
+        ),
+    ] = None,
     model: Annotated[
         Optional[str],
         typer.Option(
@@ -28,12 +37,19 @@ def review(
 
     Args:
         code (typer.FileText): The file containing code to be reviewed.
-        model (str, optional): The model to run inference with. Defaults to CHAT_LLM.
+        output (typer.FileTextWrite, optional): The file to write the response to.
+        model (str, optional): The model to run inference with.
+
+    Returns:
+        None
 
     Examples:
     ```shell
     # Review a code file
-    code-pilot review code.py
+    code-pilot review src/main.rs
+
+    # Save the output to a markdown file
+    code-pilot review app/models.py -o code-review.md
 
     # Review a code file using a specific model
     code-pilot review code.py -m meta-llama/Llama-3.2-3B-Instruct
@@ -58,7 +74,14 @@ def review(
             max_tokens=2048,
         )
 
-        print_highlighted(response.choices[0].message.content)
+        if output:
+            with output as file:
+                file.write(response.choices[0].message.content)
+
+            print(f"Output [bold green]saved[/bold green] to {output.name}.")
+
+        else:
+            print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")

@@ -1,105 +1,130 @@
-# Code Pilot CLI
+# CodePilot CLI
 
-[![Continuous Integration](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml)
-[![Continuous Deployment](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml)
-[![Black](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml)
-[![Ruff](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml)
+[![CI](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ci.yml)
+[![CD](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/cd.yml)
+[![Code Format](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/black.yml)
+[![Linter](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml/badge.svg)](https://github.com/youzarsiph/code-pilot-cli/actions/workflows/ruff.yml)
+[![PyPI - Version](https://img.shields.io/pypi/v/code-pilot-cli?logo=pypi&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/code-pilot-cli?logo=python&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/code-pilot-cli?logo=pypi&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
+[![PyPI - Format](https://img.shields.io/pypi/format/code-pilot-cli?logo=pypi&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
+[![PyPI - Implementation](https://img.shields.io/pypi/implementation/code-pilot-cli?logo=pypi&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
+[![PyPI - License](https://img.shields.io/pypi/l/code-pilot-cli?logo=pypi&logoColor=white)](https://pypi.org/project/code-pilot-cli/)
 
-Your customizable coding assistant for the command line interface (CLI).
+A powerful and customizable code assistant designed for the command line interface (CLI) to help developers automate various coding tasks.
 
-## Demo
+## Interactive Demonstration
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XdwqzXIJ_qc?si=VpsC4GvZPW-S70r0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+We have created a [short interactive demonstration](https://youtu.be/XdwqzXIJ_qc) on how to use the CodePilot CLI, showcasing its features.
+
+[![Interactive Demonstration of CodePilot CLI](https://img.youtube.com/vi/XdwqzXIJ_qc/maxresdefault.jpg)]([https://](https://www.youtube.com/watch?v=XdwqzXIJ_qc))
 
 ## Getting Started
 
-To begin, install the package:
+To use the CodePilot CLI, you'll need to first install the package using pip:
 
 ```bash
 pip install code-pilot-cli
 ```
 
-Export your `HF_TOKEN` as an environment variable, you can get your token from [HuggingFace](https://huggingface.co/settings/tokens):
+Next, make sure to export your Hugging Face `HF_TOKEN` as an environment variable. You can obtain your token from [Hugging Face's website](https://huggingface.co/settings/tokens).
 
-Bash:
+For Bash:
 
 ```bash
 export HF_TOKEN=hf_**********************************
 ```
 
-Powershell:
+For PowerShell:
 
 ```powershell
 $env:HF_TOKEN = "hf_**********************************"
 ```
 
-You are now ready to utilize the application.
+Now you are all set to start using the CodePilot CLI!
 
 ## Usage
 
-To view the help options, run:
+### Access Help Options
+
+To view available help options, run:
 
 ```bash
 code-pilot --help
 ```
 
-### Generate Commands
+### Interact with CodePilot
 
-You can generate shell commands using natural language:
+Engage with CodePilot by providing prompts:
 
 ```bash
 code-pilot ai 'list all files in the current directory'
 ```
 
-### Chat
+### Chat with CodePilot
 
-Engage in a chat with CodePilot:
+Initiate a conversation with CodePilot and export or import the chat history for future reference:
 
 ```bash
 code-pilot chat --
-
-# Export chat history
-code-pilot chat -e chat-history.json
-
-# Import chat history
-code-pilot chat -h chat-history.json
-
-# Import chat history and then export it after the session
-code-pilot chat -h chat-history.json -e chat-history.json
 ```
 
-### Code Completions
+### Generate Code Completions
 
-Receive code completions from CodePilot:
+Obtain code completions from CodePilot based on the user's input:
 
 ```bash
 code-pilot completions 'fn add(x: i32, y: i32) -> i32 {'
 ```
 
-### Code Enhancements
+### Generate Documentation
 
-Obtain suggestions from CodePilot for improving your code to adhere to best practices and industry standards:
+Generate code documentation directly from source files:
 
 ```bash
-code-pilot enhance app.py
+code-pilot document src/main.rs
 ```
 
-### Perform Code Scans
+### Enhance Code Quality and Best Practices
 
-Check your code for potential security vulnerabilities:
+Get suggestions on how to improve your code according to best practices:
 
 ```bash
-code-pilot scan app.py
+code-pilot enhance App.tsx
 ```
 
-### Custom Large Language Models (LLMs)
+### Perform Code Review
 
-Utilize custom LLMs:
+Perform a code review using CodePilot model and receive valuable feedback:
 
 ```bash
-code-pilot chat -m 'mistralai/Mistral-Nemo-Instruct-2407'
+code-pilot review app/models.py
+```
+
+### Perform Code Scanning
+
+Scan your code for potential security vulnerabilities:
+
+```bash
+code-pilot scan src/main.rs
+```
+
+### Generate Tests
+
+Automatically generate tests based on your source code:
+
+```bash
+code-pilot test src/lib.rs
+```
+
+### Use Custom Large Language Models (LLMs)
+
+Leverage custom LLMs for enhanced code assistants:
+
+```bash
+code-pilot chat -m'mistralai/Mistral-Nemo-Instruct-2407'
 ```
 
 ## License
 
-This project is licensed under the MIT License.
+The CodePilot CLI project is released under the MIT License.

@@ -34,13 +34,13 @@ def print_highlighted(code: str, subtitle: Optional[str] = None) -> None:
     """
 
     console = Console()
-    md = Markdown(code, code_theme="github-dark", justify="left")
+    md = Markdown(code, code_theme="lightbulb")
 
     console.print(
         Panel(
             md,
             title_align="left",
-            title="[bold cyan]CodePilot[/bold cyan]",
+            title="[bold yellow]CodePilot[/bold yellow]",
             subtitle=subtitle,
             subtitle_align="right",
         )

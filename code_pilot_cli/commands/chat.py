@@ -46,6 +46,9 @@ def chat(
         history (typer.FileText, optional): Optional file to load previous chat history.
         model (str, optional): The model to run inference with.
 
+    Returns:
+        None
+
     Examples:
     ```shell
     # Start chatting

@@ -1,4 +1,4 @@
-""" Command for natural language interactions like command generation """
+""" Interact with CodePilot using prompts """
 
 from typing import Annotated, Optional
 import typer
@@ -21,6 +21,15 @@ def ai(
             encoding="utf-8",
         ),
     ] = None,
+    output: Annotated[
+        Optional[typer.FileTextWrite],
+        typer.Option(
+            "--output",
+            "-o",
+            help="Output file to write the response to.",
+            encoding="utf-8",
+        ),
+    ] = None,
     model: Annotated[
         Optional[str],
         typer.Option(
@@ -33,20 +42,27 @@ def ai(
     ] = CHAT_LLM,
 ) -> None:
     """
-    Interact with CodePilot using natural language.
+    Interact with CodePilot using prompts.
 
     Args:
         prompt (str): The natural language prompt from which to generate a command.
         code (typer.FileText, optional): The file containing code to be scanned.
-        model (str, optional): The model to run inference with. Defaults to CHAT_LLM.
+        output (typer.FileTextWrite, optional): The file to write the response to.
+        model (str, optional): The model to run inference with.
+
+    Returns:
+        None
 
     Examples:
     ```shell
     # Interact with CodePilot
-    code-pilot ai "Generate a command to install a package called pandas"
+    code-pilot ai "How to install Rust?"
+
+    # Save the output to a markdown file
+    code-pilot ai "Build an Expo to-do app using typescript and expo-router" -o response.md
 
     # Interact with CodePilot using a specific model
-    code-pilot ai "Generate a command to install a package called pandas" -m meta-llama/Llama-3.2-3B-Instruct
+    code-pilot ai "Build a PyTorch KNN classifier" -m meta-llama/Llama-3.2-3B-Instruct
     ```
     """
 
@@ -66,7 +82,14 @@ def ai(
             max_tokens=2048,
         )
 
-        print_highlighted(response.choices[0].message.content)
+        if output:
+            with output as file:
+                file.write(response.choices[0].message.content)
+
+            print(f"Output [bold green]saved[/bold green] to {output.name}.")
+
+        else:
+            print_highlighted(response.choices[0].message.content)
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")
