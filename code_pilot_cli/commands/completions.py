@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 import typer
 from huggingface_hub import InferenceClient
 from rich import print
-from code_pilot_cli import COMPLETION_LLM, print_highlighted
+from code_pilot_cli import COMPLETION_LLM, create_panel
 
 
 def completions(
@@ -52,19 +52,17 @@ def completions(
             "to a deployed Inference Endpoint.",
         ),
     ] = COMPLETION_LLM,
+    max_tokens: Annotated[
+        Optional[int],
+        typer.Option(
+            "--max-tokens",
+            "-t",
+            help="Maximum number of tokens allowed in the response.",
+        ),
+    ] = 128,
 ) -> None:
     """
     Generate code completions based on the provided code snippet.
-
-    Args:
-        code (str): The code to complete.
-        file (typer.FileText, optional): The file to read the code snippet from.
-        language (str, optional): The programming language of the code snippet.
-        output (typer.FileTextWrite, optional): The file to write the response to.
-        model (str, optional): The model to run inference with.
-
-    Returns:
-        None
 
     Examples:
     ```shell
@@ -94,7 +92,7 @@ def completions(
     try:
         response = client.text_generation(
             f"```{language if language else ''}\n{input}",
-            max_new_tokens=512,
+            max_new_tokens=max_tokens,
         )
 
         if output:
@@ -104,7 +102,12 @@ def completions(
             print(f"Output [bold green]saved[/bold green] to {output.name}.")
 
         else:
-            print_highlighted(f"```{language if language else ''}\n{input + response}")
+            print(
+                create_panel(
+                    "CodePilot",
+                    f"```{language if language else ''}\n{input + response}",
+                )
+            )
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")

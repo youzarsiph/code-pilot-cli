@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 import typer
 from huggingface_hub import InferenceClient
 from rich import print
-from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, print_highlighted
+from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, create_panel
 
 
 def review(
@@ -31,17 +31,17 @@ def review(
             "to a deployed Inference Endpoint.",
         ),
     ] = CHAT_LLM,
+    max_tokens: Annotated[
+        Optional[int],
+        typer.Option(
+            "--max-tokens",
+            "-t",
+            help="Maximum number of tokens allowed in the response.",
+        ),
+    ] = 2048,
 ) -> None:
     """
     Perform code reviews to analyze code quality and adherence to best practices.
-
-    Args:
-        code (typer.FileText): The file containing code to be reviewed.
-        output (typer.FileTextWrite, optional): The file to write the response to.
-        model (str, optional): The model to run inference with.
-
-    Returns:
-        None
 
     Examples:
     ```shell
@@ -71,17 +71,17 @@ def review(
                     f"suggestions for improvement:\n{code.read()}",
                 },
             ],
-            max_tokens=2048,
+            max_tokens=max_tokens,
         )
 
         if output:
             with output as file:
-                file.write(response.choices[0].message.content)
+                file.write(str(response.choices[0].message.content))
 
             print(f"Output [bold green]saved[/bold green] to {output.name}.")
 
         else:
-            print_highlighted(response.choices[0].message.content)
+            print(create_panel("CodePilot", str(response.choices[0].message.content)))
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")

@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 import typer
 from huggingface_hub import InferenceClient
 from rich import print
-from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, print_highlighted
+from code_pilot_cli import CHAT_LLM, SYSTEM_MESSAGE, create_panel
 
 
 def ai(
@@ -40,18 +40,17 @@ def ai(
             "to a deployed Inference Endpoint.",
         ),
     ] = CHAT_LLM,
+    max_tokens: Annotated[
+        Optional[int],
+        typer.Option(
+            "--max-tokens",
+            "-t",
+            help="Maximum number of tokens allowed in the response.",
+        ),
+    ] = 2048,
 ) -> None:
     """
     Interact with CodePilot using prompts.
-
-    Args:
-        prompt (str): The natural language prompt from which to generate a command.
-        code (typer.FileText, optional): The file containing code to be scanned.
-        output (typer.FileTextWrite, optional): The file to write the response to.
-        model (str, optional): The model to run inference with.
-
-    Returns:
-        None
 
     Examples:
     ```shell
@@ -79,7 +78,7 @@ def ai(
                     ),
                 },
             ],
-            max_tokens=2048,
+            max_tokens=max_tokens,
         )
 
         if output:
@@ -89,7 +88,7 @@ def ai(
             print(f"Output [bold green]saved[/bold green] to {output.name}.")
 
         else:
-            print_highlighted(response.choices[0].message.content)
+            print(create_panel("CodePilot", response.choices[0].message.content))
 
     except Exception as error:
         print(f"[bold red]Error[/bold red]: {error}")
